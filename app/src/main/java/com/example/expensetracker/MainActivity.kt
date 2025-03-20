@@ -57,6 +57,11 @@ class MainActivity : AppCompatActivity() {
         Log.d("ActivityLifecycle", "onStop called")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("ActivityLifecycle", "onDestroy called")
+    }
+
     private fun addExpense() {
         val name = expenseNameInput.text.toString().trim()
         val amountText = expenseAmountInput.text.toString().trim()
