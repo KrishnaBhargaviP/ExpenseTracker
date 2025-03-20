@@ -1,8 +1,11 @@
 package com.example.expensetracker
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.CalendarView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var expenseNameInput: EditText
     private lateinit var expenseAmountInput: EditText
     private lateinit var addExpenseButton: Button
+    private lateinit var expenseDateInput: CalendarView
+    private lateinit var btnFinancialTips: Button
 
     private val expensesList: MutableList<Expense> = mutableListOf()
 
@@ -29,6 +34,35 @@ class MainActivity : AppCompatActivity() {
         expenseNameInput = findViewById(R.id.editTextText)
         expenseAmountInput = findViewById(R.id.editTextText2)
         addExpenseButton = findViewById(R.id.button)
+        expenseDateInput = findViewById(R.id.calendarView)
+
+        //intent
+        val btnShowDetails = findViewById<Button>(R.id.showDetailsButton)
+
+        btnShowDetails.setOnClickListener {
+            val expenseName = expenseNameInput.text.toString()
+            val expenseAmount = expenseAmountInput.text.toString().toFloatOrNull() ?: 0.0f
+            val expenseDate = expenseDateInput.toString()
+
+
+            // Create intent and pass data to Expense DetailsActivity
+            val intent = Intent(this, ExpenseDetailsActivity::class.java)
+            intent.putExtra("expenseName", expenseName)
+            intent.putExtra("expense_amount", expenseAmount)
+            intent.putExtra("expense_date", expenseDate)
+
+            startActivity(intent)
+        }
+
+        btnFinancialTips = findViewById(R.id.btnFinancialTips)
+        btnFinancialTips.setOnClickListener {
+            val url = "https://www.investopedia.com/"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            val chooser = Intent.createChooser(intent, "Open URL with")
+            startActivity(chooser)
+        }
+
+
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = Adapter(expensesList) { position -> deleteExpense(position) }
