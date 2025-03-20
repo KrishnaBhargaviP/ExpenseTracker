@@ -1,6 +1,7 @@
 package com.example.expensetracker
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.d("ActivityLifecycle", "onCreate called")
 
         // Initialize Views
         recyclerView = findViewById(R.id.recyclerView)
@@ -33,6 +35,26 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         addExpenseButton.setOnClickListener { addExpense() }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("ActivityLifecycle", "onStart called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("ActivityLifecycle", "onResume called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("ActivityLifecycle", "onPause called")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("ActivityLifecycle", "onStop called")
     }
 
     private fun addExpense() {
