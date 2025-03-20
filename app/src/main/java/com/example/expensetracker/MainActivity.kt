@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addExpenseButton: Button
     private lateinit var expenseDateInput: CalendarView
     private lateinit var btnFinancialTips: Button
+    private lateinit var headerFragment: HeaderFragment
+    private lateinit var footerFragment: FooterFragment
 
     private val expensesList: MutableList<Expense> = mutableListOf()
 
@@ -28,6 +30,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d("ActivityLifecycle", "onCreate called")
+
+        // Dynamically add
+        headerFragment = HeaderFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.header_container, headerFragment)
+            .commit()
+
+        footerFragment = FooterFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.expenseTotalTextView, footerFragment)
+            .commit()
 
         // Initialize Views
         recyclerView = findViewById(R.id.recyclerView)
