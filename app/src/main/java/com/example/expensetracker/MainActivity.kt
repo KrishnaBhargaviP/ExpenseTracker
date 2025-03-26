@@ -51,11 +51,15 @@ class MainActivity : AppCompatActivity() {
 
         //intent
         val btnShowDetails = findViewById<Button>(R.id.showDetailsButton)
+        var selectedDate = ""
+        expenseDateInput.setOnDateChangeListener { _, year, month, dayOfMonth ->
+            selectedDate = "$dayOfMonth/${month + 1}/$year"
+        }
 
         btnShowDetails.setOnClickListener {
             val expenseName = expenseNameInput.text.toString()
             val expenseAmount = expenseAmountInput.text.toString().toFloatOrNull() ?: 0.0f
-            val expenseDate = expenseDateInput.toString()
+            val expenseDate = selectedDate
 
 
             // Create intent and pass data to Expense DetailsActivity
