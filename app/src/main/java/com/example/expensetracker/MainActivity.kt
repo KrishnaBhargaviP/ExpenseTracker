@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         footerFragment = FooterFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.expenseTotalTextView, footerFragment)
+            .replace(R.id.footer_container, footerFragment, "FOOTER_TAG")
             .commit()
 
         // Initialize Views
@@ -134,6 +134,7 @@ class MainActivity : AppCompatActivity() {
         expenseNameInput.text.clear()
         expenseAmountInput.text.clear()
 
+        updateTotalExpenses()
         Toast.makeText(this, "Expense Added!", Toast.LENGTH_SHORT).show()
     }
 
@@ -143,7 +144,19 @@ class MainActivity : AppCompatActivity() {
         expensesList.removeAt(position)
         adapter.notifyItemRemoved(position)
         adapter.notifyItemRangeChanged(position, expensesList.size)
+        updateTotalExpenses()
 //        println("After deletion: $expensesList")
-
     }
+
+    private fun calculateTotal(): Double {
+        return expensesList.sumOf { it.expenseAmount }
+    }
+
+    private fun updateTotalExpenses() {
+        val total = calculateTotal()
+        val footer = supportFragmentManager.findFragmentByTag("FOOTER_TAG") as? FooterFragment
+        footer?.updateExpenseTotal(total)
+    }
+
+
 }
