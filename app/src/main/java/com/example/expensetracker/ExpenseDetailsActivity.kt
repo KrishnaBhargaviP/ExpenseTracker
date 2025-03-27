@@ -26,10 +26,9 @@ class ExpenseDetailsActivity : AppCompatActivity() {
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToHomeButton.setOnClickListener {
-            val intent = Intent(this@ExpenseDetailsActivity, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
-            finish()
         }
 
 
