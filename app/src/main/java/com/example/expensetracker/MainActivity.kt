@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,25 +24,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addExpenseButton: Button
     private lateinit var expenseDateInput: CalendarView
     private lateinit var btnFinancialTips: Button
-    private lateinit var headerFragment: HeaderFragment
-    private lateinit var footerFragment: FooterFragment
 
     private val expensesList: MutableList<Expense> = mutableListOf()
+    private var selectedDate: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d("ActivityLifecycle", "onCreate called")
 
-        // Dynamically add
-        headerFragment = HeaderFragment()
+        // Dynamically add header and footer fragments if needed.
         supportFragmentManager.beginTransaction()
-            .replace(R.id.header_container, headerFragment)
+            .replace(R.id.header_container, HeaderFragment())
             .commit()
 
-        footerFragment = FooterFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.footer_container, footerFragment, "FOOTER_TAG")
+            .replace(R.id.footer_container, FooterFragment(), "FOOTER_TAG")
             .commit()
 
         // Initialize Views
@@ -48,30 +48,15 @@ class MainActivity : AppCompatActivity() {
         expenseAmountInput = findViewById(R.id.editTextText2)
         addExpenseButton = findViewById(R.id.button)
         expenseDateInput = findViewById(R.id.calendarView)
+        btnFinancialTips = findViewById(R.id.btnFinancialTips)
 
-        //intent
-        val btnShowDetails = findViewById<Button>(R.id.showDetailsButton)
-        var selectedDate = ""
+        // Initialize the selected date using CalendarView's current date.
+        selectedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(expenseDateInput.date))
         expenseDateInput.setOnDateChangeListener { _, year, month, dayOfMonth ->
             selectedDate = "$dayOfMonth/${month + 1}/$year"
         }
 
-        btnShowDetails.setOnClickListener {
-            val expenseName = expenseNameInput.text.toString()
-            val expenseAmount = expenseAmountInput.text.toString().toFloatOrNull() ?: 0.0f
-            val expenseDate = selectedDate
-
-
-            // Create intent and pass data to Expense DetailsActivity
-            val intent = Intent(this, ExpenseDetailsActivity::class.java)
-            intent.putExtra("expenseName", expenseName)
-            intent.putExtra("expense_amount", expenseAmount)
-            intent.putExtra("expense_date", expenseDate)
-
-            startActivity(intent)
-        }
-
-        btnFinancialTips = findViewById(R.id.btnFinancialTips)
+        // Setup Financial Tips button.
         btnFinancialTips.setOnClickListener {
             val url = "https://www.investopedia.com/"
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -79,12 +64,23 @@ class MainActivity : AppCompatActivity() {
             startActivity(chooser)
         }
 
-
-
+        // Setup the RecyclerView adapter.
+        adapter = Adapter(expensesList,
+            onDeleteClick = { position -> deleteExpense(position) },
+            onShowDetailsClick = { expense ->
+                // Create intent and pass expense details to ExpenseDetailsActivity.
+                val intent = Intent(this, ExpenseDetailsActivity::class.java).apply {
+                    putExtra("expenseName", expense.expenseName)
+                    putExtra("expense_amount", expense.expenseAmount) // Passed as a Double.
+                    putExtra("expense_date", expense.expenseDate)
+                }
+                startActivity(intent)
+            }
+        )
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = Adapter(expensesList) { position -> deleteExpense(position) }
         recyclerView.adapter = adapter
 
+        // Setup Add Expense button.
         addExpenseButton.setOnClickListener { addExpense() }
     }
 
@@ -128,13 +124,12 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val newExpense = Expense(name, amount)
-//        println("After Adding: $newExpense")
+        // Create a new Expense with the selected date.
+        val newExpense = Expense(name, amount, selectedDate)
         expensesList.add(newExpense)
-//        println("expensesList now: $expensesList")
         adapter.notifyItemInserted(expensesList.size - 1)
 
-        // Reset Fields
+        // Clear the input fields.
         expenseNameInput.text.clear()
         expenseAmountInput.text.clear()
 
@@ -143,13 +138,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteExpense(position: Int) {
-//        println("Before deletion: $expensesList")
-
         expensesList.removeAt(position)
         adapter.notifyItemRemoved(position)
         adapter.notifyItemRangeChanged(position, expensesList.size)
         updateTotalExpenses()
-//        println("After deletion: $expensesList")
     }
 
     private fun calculateTotal(): Double {
@@ -161,6 +153,4 @@ class MainActivity : AppCompatActivity() {
         val footer = supportFragmentManager.findFragmentByTag("FOOTER_TAG") as? FooterFragment
         footer?.updateExpenseTotal(total)
     }
-
-
 }

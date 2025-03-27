@@ -8,32 +8,38 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class Adapter(
-    private val list: MutableList<Expense>,
-    private val onDeleteClick: (Int) -> Unit
-) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+    private val expensesList: List<Expense>,
+    private val onDeleteClick: (Int) -> Unit,
+    private val onShowDetailsClick: (Expense) -> Unit
+) : RecyclerView.Adapter<Adapter.ExpenseViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_view_design, parent, false)
-        return ViewHolder(view)
+    inner class ExpenseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textViewExpenseName: TextView = itemView.findViewById(R.id.textView1)
+        val textViewExpenseAmount: TextView = itemView.findViewById(R.id.textView2)
+        val btnDelete: Button = itemView.findViewById(R.id.button3)
+        val btnShowDetails: Button = itemView.findViewById(R.id.button2)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        holder.expenseNameText.text = item.expenseName
-        holder.expenseAmountText.text = "$${String.format("%.2f", item.expenseAmount)}"
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.card_view_design, parent, false)
+        return ExpenseViewHolder(view)
+    }
 
-        // delete callback;
-        holder.deleteButton.setOnClickListener {
+    override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
+        val expense = expensesList[position]
+        holder.textViewExpenseName.text = expense.expenseName
+        holder.textViewExpenseAmount.text = expense.expenseAmount.toString()
+
+        // Handle Delete button click
+        holder.btnDelete.setOnClickListener {
             onDeleteClick(position)
+        }
+
+        // Handle Show Details button click
+        holder.btnShowDetails.setOnClickListener {
+            onShowDetailsClick(expense)
         }
     }
 
-    override fun getItemCount(): Int = list.size
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val expenseNameText: TextView = itemView.findViewById(R.id.textView1)
-        val expenseAmountText: TextView = itemView.findViewById(R.id.textView2)
-        val deleteButton: Button = itemView.findViewById(R.id.button3)
-    }
+    override fun getItemCount(): Int = expensesList.size
 }

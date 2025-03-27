@@ -60,12 +60,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="343dp"
-        android:layout_height="242dp"
-        android:layout_marginEnd="40dp"
+        android:layout_width="387dp"
+        android:layout_height="253dp"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView"
@@ -90,25 +90,15 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <Button
-        android:id="@+id/showDetailsButton"
-        android:layout_width="191dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="4dp"
-        android:text="Show details"
+        android:id="@+id/btnFinancialTips"
+        android:layout_width="185dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="12dp"
+        android:text="Financial Tips"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView" />
-
-    <Button
-        android:id="@+id/btnFinancialTips"
-        android:layout_width="177dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="11dp"
-        android:text="Financial Tips"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/showDetailsButton" />
 
     <FrameLayout
         android:id="@+id/footer_container"

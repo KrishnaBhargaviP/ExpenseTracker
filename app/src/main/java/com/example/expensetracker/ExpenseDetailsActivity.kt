@@ -16,12 +16,12 @@ class ExpenseDetailsActivity : AppCompatActivity() {
 
         // Retrieve the expense data passed from MainActivity via intent extras
         val expenseName = intent.getStringExtra("expenseName") ?: "No Name"
-        val expenseAmount = intent.getFloatExtra("expense_amount", 0.0f)
+        val expenseAmount = intent.getDoubleExtra("expense_amount", 0.0)
         val expenseDate = intent.getStringExtra("expense_date") ?: "No Date"
 
         // Display the received data in the UI
         findViewById<TextView>(R.id.expenseName).text = expenseName
-        findViewById<TextView>(R.id.expenseAmount).text = "$$expenseAmount"
+        findViewById<TextView>(R.id.expenseAmount).text = expenseAmount.toString()
         findViewById<TextView>(R.id.expenseDate).text = expenseDate
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
