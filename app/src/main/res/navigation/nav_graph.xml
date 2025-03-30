@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/expenseListFragment">
+
+    <fragment
+        android:id="@+id/expenseListFragment"
+        android:name="com.example.expensetracker.ExpenseListFragment"
+        android:label="Expense List">
+        <action
+            android:id="@+id/action_expenseListFragment_to_expenseDetailsFragment"
+            app:destination="@id/expenseDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/expenseDetailsFragment"
+        android:name="com.example.expensetracker.ExpenseDetailsFragment"
+        android:label="Expense Details">
+        <!-- Define arguments to pass expense details -->
+        <argument
+            android:name="expenseName"
+            app:argType="string" />
+        <argument
+            android:name="expenseAmount"
+            app:argType="string" />
+        <argument
+            android:name="expenseDate"
+            app:argType="string" />
+    </fragment>
+
+
+</navigation>
