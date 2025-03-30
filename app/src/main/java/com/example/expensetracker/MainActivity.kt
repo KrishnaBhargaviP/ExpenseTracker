@@ -1,5 +1,6 @@
 package com.example.expensetracker
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +12,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -27,6 +33,9 @@ class MainActivity : AppCompatActivity() {
 
     private val expensesList: MutableList<Expense> = mutableListOf()
     private var selectedDate: String = ""
+
+    private val FILE_NAME = "expenses.json"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +89,11 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        // Load saved expenses from file, if any.
+        expensesList.addAll(loadTasksFromFile())
+        adapter.notifyDataSetChanged()
+
+
         // Setup Add Expense button.
         addExpenseButton.setOnClickListener { addExpense() }
     }
@@ -97,6 +111,8 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.d("ActivityLifecycle", "onPause called")
+        // Optionally, save expenses when the activity pauses.
+        saveTasksToFile(expensesList)
     }
 
     override fun onStop() {
@@ -134,6 +150,7 @@ class MainActivity : AppCompatActivity() {
         expenseAmountInput.text.clear()
 
         updateTotalExpenses()
+        saveTasksToFile(expensesList)
         Toast.makeText(this, "Expense Added!", Toast.LENGTH_SHORT).show()
     }
 
@@ -142,6 +159,7 @@ class MainActivity : AppCompatActivity() {
         adapter.notifyItemRemoved(position)
         adapter.notifyItemRangeChanged(position, expensesList.size)
         updateTotalExpenses()
+        saveTasksToFile(expensesList)
     }
 
     private fun calculateTotal(): Double {
@@ -152,5 +170,38 @@ class MainActivity : AppCompatActivity() {
         val total = calculateTotal()
         val footer = supportFragmentManager.findFragmentByTag("FOOTER_TAG") as? FooterFragment
         footer?.updateExpenseTotal(total)
+    }
+
+    private fun saveTasksToFile(taskList: List<Expense>) {
+        try {
+            val json = Gson().toJson(taskList)
+            openFileOutput(FILE_NAME, Context.MODE_PRIVATE).use { output ->
+                output.write(json.toByteArray())
+            }
+        } catch (e: IOException) {
+            Log.e("FileStorage", "Error saving tasks: ${e.message}")
+        }
+    }
+
+
+    private fun loadTasksFromFile(): MutableList<Expense> {
+        val taskList: MutableList<Expense> = mutableListOf()
+        try {
+            val file = File(filesDir, FILE_NAME)
+
+            if (!file.exists()) return taskList
+
+            val json = file.readText()
+            val type = object : TypeToken<List<Expense>>() {}.type
+            val loadedTasks: List<Expense> = Gson().fromJson(json, type)
+            taskList.addAll(loadedTasks)
+
+            Log.d("FileStorage", "Tasks loaded successfully")
+        } catch (e: FileNotFoundException) {
+            Log.e("FileStorage", "File not found: ${e.message}")
+        } catch (e: IOException) {
+            Log.e("FileStorage", "Error reading file: ${e.message}")
+        }
+        return taskList
     }
 }
