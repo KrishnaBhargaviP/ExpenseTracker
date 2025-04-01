@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.expensetracker.MainFragment"
+        android:name="com.example.expensetracker.ExpensesListFragment"
         android:label="MainFragment" >
         <action
             android:id="@+id/action_mainFragment_to_addExpenseFragment"

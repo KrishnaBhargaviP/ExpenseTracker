@@ -20,7 +20,7 @@ import java.io.IOException
 
 private const val FILE_NAME = "expenses.txt"
 
-class MainFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
+class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var expenseAdapter: ExpenseAdapter
@@ -96,11 +96,12 @@ class MainFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
     override fun onViewClick(expense: Expense) {
         val bundle = Bundle().apply {
             putString("expenseName", expense.expenseName)
-            putDouble("expenseAmount", expense.expenseAmount)
+            putFloat("expenseAmount", expense.expenseAmount.toFloat())
             putString("expenseDate", expense.expenseDate)
         }
         findNavController().navigate(R.id.expenseDetailsFragment, bundle)
     }
+
 
     private fun updateExpenseTotalFromFile(view: View?) {
         val fileExpenses = loadExpensesFromFile(requireContext())
