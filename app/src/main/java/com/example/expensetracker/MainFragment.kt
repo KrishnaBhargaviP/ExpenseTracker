@@ -43,7 +43,7 @@ class MainFragment : Fragment() {
                 val bundle = Bundle().apply {
                     putInt("expenseId", expense.id.toInt())
                     putString("expenseName", expense.expenseName)
-                    putDouble("expenseAmount", expense.expenseAmount)
+                    putDouble("expenseAmount", expense.expenseAmount.toDouble())
                     putString("expenseDate", expense.expenseDate)
                 }
                 findNavController().navigate(R.id.action_mainFragment_to_addExpenseFragment, bundle)
@@ -59,11 +59,12 @@ class MainFragment : Fragment() {
             override fun onViewClick(expense: Expense) {
                 val bundle = Bundle().apply {
                     putString("expenseName", expense.expenseName)
-                    putDouble("expenseAmount", expense.expenseAmount)
+                    putFloat("expenseAmount", expense.expenseAmount.toFloat())
                     putString("expenseDate", expense.expenseDate)
                 }
                 findNavController().navigate(R.id.expenseDetailsFragment, bundle)
             }
+
         })
 
         recyclerView.adapter = expenseAdapter

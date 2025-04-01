@@ -1,6 +1,5 @@
 package com.example.expensetracker
 
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,21 +31,29 @@ class ExpenseAdapter(
     override fun getItemCount(): Int = expenseList.size
 
     inner class ExpenseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val expenseName: TextView = itemView.findViewById(R.id.expenseNameTextView)
-        private val expenseAmount: TextView = itemView.findViewById(R.id.expenseAmountTextView)
-        private val expenseDate: TextView = itemView.findViewById(R.id.expenseDateTextView)
-        private val viewButton: Button = itemView.findViewById(R.id.viewButton)
+        private val expenseNameTextView: TextView = itemView.findViewById(R.id.expenseNameTextView)
+        private val expenseAmountTextView: TextView = itemView.findViewById(R.id.expenseAmountTextView)
+        private val expenseDateTextView: TextView = itemView.findViewById(R.id.expenseDateTextView)
         private val editButton: Button = itemView.findViewById(R.id.editButton)
         private val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
+        private val viewButton: Button = itemView.findViewById(R.id.viewButton)
 
         fun bind(expense: Expense) {
-            expenseName.text = expense.expenseName
-            expenseAmount.text = "$${expense.expenseAmount}"
-            expenseDate.text = expense.expenseDate
+            expenseNameTextView.text = expense.expenseName
+            expenseAmountTextView.text = "Amount: $${"%.2f".format(expense.expenseAmount)}"
+            expenseDateTextView.text = "Date: ${expense.expenseDate}"
 
-            viewButton.setOnClickListener { listener.onViewClick(expense) }
-            editButton.setOnClickListener { listener.onEditClick(expense) }
-            deleteButton.setOnClickListener { listener.onDeleteClick(expense) }
+            editButton.setOnClickListener {
+                listener.onEditClick(expense)
+            }
+
+            deleteButton.setOnClickListener {
+                listener.onDeleteClick(expense)
+            }
+
+            viewButton.setOnClickListener {
+                listener.onViewClick(expense)
+            }
         }
     }
 }
