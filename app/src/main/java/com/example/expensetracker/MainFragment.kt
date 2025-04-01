@@ -20,7 +20,7 @@ import java.io.IOException
 
 private const val FILE_NAME = "expenses.txt"
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var expenseAdapter: ExpenseAdapter
@@ -38,35 +38,7 @@ class MainFragment : Fragment() {
         expenseList.clear()
         expenseList.addAll(loadExpensesFromFile(requireContext()))
 
-        expenseAdapter = ExpenseAdapter(expenseList, object : ExpenseAdapter.ExpenseItemListener {
-            override fun onEditClick(expense: Expense) {
-                val bundle = Bundle().apply {
-                    putInt("expenseId", expense.id.toInt())
-                    putString("expenseName", expense.expenseName)
-                    putDouble("expenseAmount", expense.expenseAmount.toDouble())
-                    putString("expenseDate", expense.expenseDate)
-                }
-                findNavController().navigate(R.id.action_mainFragment_to_addExpenseFragment, bundle)
-            }
-
-            override fun onDeleteClick(expense: Expense) {
-                expenseList.remove(expense)
-                expenseAdapter.notifyDataSetChanged()
-                saveExpensesToFile(requireContext(), expenseList)
-                updateExpenseTotal()
-            }
-
-            override fun onViewClick(expense: Expense) {
-                val bundle = Bundle().apply {
-                    putString("expenseName", expense.expenseName)
-                    putFloat("expenseAmount", expense.expenseAmount.toFloat())
-                    putString("expenseDate", expense.expenseDate)
-                }
-                findNavController().navigate(R.id.expenseDetailsFragment, bundle)
-            }
-
-        })
-
+        expenseAdapter = ExpenseAdapter(expenseList, this)
         recyclerView.adapter = expenseAdapter
 
         val addExpenseButton: FloatingActionButton = view.findViewById(R.id.addTaskFab)
@@ -74,7 +46,7 @@ class MainFragment : Fragment() {
             findNavController().navigate(R.id.action_mainFragment_to_addExpenseFragment)
         }
 
-        updateExpenseTotal()
+        updateExpenseTotalFromFile(view)
 
         return view
     }
@@ -100,12 +72,39 @@ class MainFragment : Fragment() {
                     expenseAdapter.notifyItemInserted(expenseList.size - 1)
                 }
                 saveExpensesToFile(requireContext(), expenseList)
-                updateExpenseTotal()
+                updateExpenseTotalFromFile(view)
             }
     }
 
-    private fun updateExpenseTotal() {
-        val total = expenseList.sumOf { it.expenseAmount }
+    override fun onEditClick(expense: Expense) {
+        val bundle = Bundle().apply {
+            putInt("expenseId", expense.id.toInt())
+            putString("expenseName", expense.expenseName)
+            putDouble("expenseAmount", expense.expenseAmount)
+            putString("expenseDate", expense.expenseDate)
+        }
+        findNavController().navigate(R.id.action_mainFragment_to_addExpenseFragment, bundle)
+    }
+
+    override fun onDeleteClick(expense: Expense) {
+        expenseList.remove(expense)
+        expenseAdapter.notifyDataSetChanged()
+        saveExpensesToFile(requireContext(), expenseList)
+        updateExpenseTotalFromFile(view)
+    }
+
+    override fun onViewClick(expense: Expense) {
+        val bundle = Bundle().apply {
+            putString("expenseName", expense.expenseName)
+            putDouble("expenseAmount", expense.expenseAmount)
+            putString("expenseDate", expense.expenseDate)
+        }
+        findNavController().navigate(R.id.expenseDetailsFragment, bundle)
+    }
+
+    private fun updateExpenseTotalFromFile(view: View?) {
+        val fileExpenses = loadExpensesFromFile(requireContext())
+        val total = fileExpenses.sumOf { it.expenseAmount }
         view?.findViewById<TextView>(R.id.totalCountTextView)?.text = "Total Expenses: $${"%.2f".format(total)}"
     }
 
