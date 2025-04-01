@@ -39,8 +39,9 @@ class ExpenseAdapter(
         private val viewButton: Button = itemView.findViewById(R.id.viewButton)
 
         fun bind(expense: Expense) {
+            val sym = java.util.Currency.getInstance(expense.currency.uppercase()).symbol
             expenseNameTextView.text = expense.expenseName
-            expenseAmountTextView.text = "Amount: $${"%.2f".format(expense.expenseAmount)}"
+            expenseAmountTextView.text = "Amount: ${sym} ${"%.2f".format(expense.expenseAmount)} "
             expenseDateTextView.text = "Date: ${expense.expenseDate}"
 
             editButton.setOnClickListener {
