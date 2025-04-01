@@ -1,0 +1,37 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:fitsSystemWindows="true">
+
+    <EditText
+        android:id="@+id/expenseName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Expense Name"
+        android:textSize="16sp"/>
+
+    <EditText
+        android:id="@+id/expenseAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Amount (e.g. 29.99)"
+        android:inputType="numberDecimal"
+        android:textSize="14sp"/>
+
+    <EditText
+        android:id="@+id/expenseDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date (e.g. 31/03/2025)"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_gravity="center"/>
+</LinearLayout>

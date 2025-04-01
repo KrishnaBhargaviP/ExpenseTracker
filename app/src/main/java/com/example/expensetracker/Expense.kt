@@ -1,3 +1,8 @@
 package com.example.expensetracker
 
-data class Expense (val expenseName: String, val expenseAmount: Double, val expenseDate: String)
+data class Expense(
+    val id: Number,
+    val expenseName: String,
+    val expenseAmount: Double,
+    val expenseDate: String
+)

@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/expenseListFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
-        android:id="@+id/expenseListFragment"
-        android:name="com.example.expensetracker.ExpenseListFragment"
-        android:label="Expense List">
+        android:id="@+id/mainFragment"
+        android:name="com.example.expensetracker.MainFragment"
+        android:label="MainFragment" >
         <action
-            android:id="@+id/action_expenseListFragment_to_expenseDetailsFragment"
+            android:id="@+id/action_mainFragment_to_addExpenseFragment"
+            app:destination="@id/addExpenseFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_expenseDetailsFragment"
             app:destination="@id/expenseDetailsFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/expenseDetailsFragment"
-        android:name="com.example.expensetracker.ExpenseDetailsFragment"
-        android:label="Expense Details">
-        <!-- Define arguments to pass expense details -->
+        android:id="@+id/addExpenseFragment"
+        android:name="com.example.expensetracker.AddExpenseFragment"
+        android:label="AddExpenseFragment">
+        <argument
+            android:name="expenseId"
+            app:argType="integer"
+            android:defaultValue="-1"/>
         <argument
             android:name="expenseName"
             app:argType="string" />
         <argument
             android:name="expenseAmount"
-            app:argType="string" />
+            app:argType="float" />
         <argument
             android:name="expenseDate"
             app:argType="string" />
     </fragment>
 
-
+    <fragment
+        android:id="@+id/expenseDetailsFragment"
+        android:name="com.example.expensetracker.ExpenseDetailsFragment"
+        android:label="ExpenseDetailsFragment">
+        <argument
+            android:name="expenseName"
+            app:argType="string" />
+        <argument
+            android:name="expenseAmount"
+            app:argType="float" />
+        <argument
+            android:name="expenseDate"
+            app:argType="string" />
+    </fragment>
 </navigation>

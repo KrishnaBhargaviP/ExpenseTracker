@@ -1,59 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:fitsSystemWindows="true">
 
     <TextView
-        android:id="@+id/expenseName"
-        android:layout_width="wrap_content"
+        android:id="@+id/expenseNameTextView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="78dp"
-        android:layout_marginTop="62dp"
-        android:layout_marginEnd="239dp"
         android:text="Expense Name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp" />
 
     <TextView
-        android:id="@+id/expenseAmount"
-        android:layout_width="wrap_content"
+        android:id="@+id/expenseAmountTextView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="78dp"
-        android:layout_marginTop="29dp"
-        android:layout_marginEnd="227dp"
-        android:text="Expense Amount"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expenseName" />
+        android:text="Amount: $0.00"
+        android:textSize="18sp"
+        android:paddingBottom="8dp" />
 
     <TextView
-        android:id="@+id/expenseDate"
-        android:layout_width="wrap_content"
+        android:id="@+id/expenseDateTextView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="78dp"
-        android:layout_marginTop="37dp"
-        android:layout_marginEnd="248dp"
-        android:layout_marginBottom="545dp"
-        android:text="Expense Date"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expenseAmount"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/backToHomeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back to Home"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="Date: 31/03/2025"
+        android:textSize="18sp" />
+</LinearLayout>
