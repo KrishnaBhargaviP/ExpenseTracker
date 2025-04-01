@@ -28,10 +28,28 @@
         android:hint="Date (e.g. 31/03/2025)"
         android:textSize="14sp"/>
 
+    <CheckBox
+        android:id="@+id/checkbox_conversion_needed"
+        android:layout_width="wrap_content"
+        android:layout_height="57dp"
+        android:text="Conversion Needed" />
+
+    <Spinner
+        android:id="@+id/spinner_currency"
+        android:layout_width="382dp"
+        android:layout_height="54dp" />
+
+    <TextView
+        android:id="@+id/text_converted_cost"
+        android:layout_width="175dp"
+        android:layout_height="38dp"
+        android:text="Converted Cost: --"
+        android:textSize="16sp" />
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:text="Save" />
 </LinearLayout>
