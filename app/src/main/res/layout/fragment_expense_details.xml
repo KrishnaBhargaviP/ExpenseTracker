@@ -28,4 +28,13 @@
         android:layout_height="wrap_content"
         android:text="Date: 31/03/2025"
         android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/backToHomeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back to Home"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"/>
+
 </LinearLayout>

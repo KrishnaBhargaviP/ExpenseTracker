@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 class ExpenseDetailsFragment : Fragment() {
 
@@ -23,6 +25,10 @@ class ExpenseDetailsFragment : Fragment() {
         view.findViewById<TextView>(R.id.expenseAmountTextView).text = "Amount: $${"%.2f".format(expenseAmount)}"
         view.findViewById<TextView>(R.id.expenseDateTextView).text = expenseDate
 
+        val backButton = view.findViewById<Button>(R.id.backToHomeButton)
+        backButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
         return view
     }
 }
