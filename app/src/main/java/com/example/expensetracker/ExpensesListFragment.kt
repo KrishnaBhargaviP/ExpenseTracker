@@ -17,6 +17,7 @@ import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.util.Currency
 
 private const val FILE_NAME = "expenses.txt"
 
@@ -56,12 +57,17 @@ class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("newExpense")
             ?.observe(viewLifecycleOwner) { bundle ->
+                val currencyCodeStr = bundle.getString("currency") ?: "CAD"
+                val currency = Currency.getInstance(currencyCodeStr)
                 val updatedExpense = Expense(
-                    bundle.getInt("expenseId"),
-                    bundle.getString("expenseName", ""),
-                    bundle.getDouble("expenseAmount", 0.0),
-                    bundle.getString("expenseDate", "")
+                    id = bundle.getInt("expenseId"),
+                    expenseName = bundle.getString("expenseName") ?: "",
+                    expenseAmount = bundle.getDouble("expenseAmount", 0.0),
+                    expenseDate = bundle.getString("expenseDate") ?: "",
+                    currency = currency.toString(),
+                    convertedCost = bundle.getDouble("convertedCost", 0.0)
                 )
+
 
                 val index = expenseList.indexOfFirst { it.id == updatedExpense.id }
                 if (index != -1) {
