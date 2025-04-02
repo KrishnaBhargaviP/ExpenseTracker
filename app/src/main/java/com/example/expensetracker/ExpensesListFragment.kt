@@ -111,7 +111,7 @@ class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
 
     private fun updateExpenseTotalFromFile(view: View?) {
         val fileExpenses = loadExpensesFromFile(requireContext())
-        val total = fileExpenses.sumOf { it.expenseAmount }
+        val total = fileExpenses.sumOf { it.convertedCost }
         view?.findViewById<TextView>(R.id.totalCountTextView)?.text = "Total Expenses: $${"%.2f".format(total)}"
     }
 
