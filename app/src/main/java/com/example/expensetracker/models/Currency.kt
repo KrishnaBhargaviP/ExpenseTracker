@@ -1,6 +1,6 @@
 package com.example.expensetracker.models
 
-data class CurrencyRatesResponse(
+data class Currency(
     val date: String,
     val cad: Map<String, Double>
 )

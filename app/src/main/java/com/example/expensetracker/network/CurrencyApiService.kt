@@ -1,6 +1,6 @@
 package com.example.expensetracker.network
 
-import com.example.expensetracker.models.CurrencyRatesResponse
+import com.example.expensetracker.models.Currency
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -13,6 +13,6 @@ interface CurrencyApiService {
     suspend fun getCurrencyCodes(): Map<String, String>
 
     @GET("{base}.json")
-    suspend fun getRates(@Path("base") base: String): CurrencyRatesResponse
+    suspend fun getRates(@Path("base") base: String): Currency
 }
 
