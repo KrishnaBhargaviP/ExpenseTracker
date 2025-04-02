@@ -3,7 +3,6 @@ package com.example.expensetracker.fragments
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,8 +22,6 @@ import java.util.Currency
 
 class AddExpenseFragment : Fragment() {
 
-    private var expenseToEdit: Expense? = null
-    private var selectedCurrency: String = "CAD"
     private var convertedAmount: Double = 0.0
 
     override fun onCreateView(
@@ -38,20 +35,16 @@ class AddExpenseFragment : Fragment() {
         val expenseDateEditText: EditText = view.findViewById(R.id.expenseDate)
         val costConversionCheckBox: CheckBox = view.findViewById(R.id.checkbox_conversion_needed)
         val spinnerCurrency: Spinner = view.findViewById(R.id.spinner_currency)
-        val textCurrencyLabel: TextView = view.findViewById(R.id.currency_label)
         val textConvertedCost: TextView = view.findViewById(R.id.text_converted_cost)
         val saveButton: Button = view.findViewById(R.id.saveButton)
 
-        textCurrencyLabel.text = "Select Currency"
-
-        // Show Date Picker
+        // Set up the date picker
         expenseDateEditText.setOnClickListener {
             val calendar = Calendar.getInstance()
             DatePickerDialog(
                 requireContext(),
                 { _, year, month, dayOfMonth ->
-                    val formattedDate = "%02d/%02d/%04d".format(dayOfMonth, month + 1, year)
-                    expenseDateEditText.setText(formattedDate)
+                    expenseDateEditText.setText("%02d/%02d/%04d".format(dayOfMonth, month + 1, year))
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -59,132 +52,86 @@ class AddExpenseFragment : Fragment() {
             ).show()
         }
 
-        // Populate Spinner using ICU Currency
-        val currencyCodes = Currency.getAvailableCurrencies().map { it.currencyCode }.sorted()
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyCodes)
+        // Populate spinner with available currency codes and set default to "CAD"
+        val currencies = Currency.getAvailableCurrencies().map { it.currencyCode }.sorted()
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCurrency.adapter = adapter
-
-        val defaultIndex = currencyCodes.indexOf("CAD")
+        val defaultIndex = currencies.indexOf("CAD")
         if (defaultIndex >= 0) spinnerCurrency.setSelection(defaultIndex)
 
-        // Load data if editing
-        arguments?.let {
-            val id = it.getInt("expenseId", -1)
-            if (id != -1) {
-                val currencyCode = it.getString("currency") ?: "CAD"
-                val currency = Currency.getInstance(currencyCode)
-                val name = it.getString("expenseName", "")
-                val amount = it.getDouble("expenseAmount", 0.0)
-                val date = it.getString("expenseDate", "")
-                val converted = it.getDouble("convertedCost", 0.0)
 
-                expenseNameEditText.setText(name)
-                expenseAmountEditText.setText(amount.toString())
-                expenseDateEditText.setText(date)
-                spinnerCurrency.setSelection(currencyCodes.indexOf(currency.currencyCode))
-
-                val formatted = NumberFormat.getCurrencyInstance().apply {
-                    this.currency = currency
-                }.format(converted)
-                textConvertedCost.text = "Converted: $formatted"
-            }
-        }
-
-        costConversionCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            val userAmountString = expenseAmountEditText.text.toString()
-            val userAmount = userAmountString.toDoubleOrNull() ?: 0.0
-
-            if (isChecked) {
-                performCurrencyConversion(expenseAmountEditText, textConvertedCost)
-            } else {
-                convertedAmount = userAmount
-                val formatted = NumberFormat.getCurrencyInstance().format(userAmount)
-                textConvertedCost.text = "Amount: $formatted"
-            }
-        }
-
-        spinnerCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>, view: View?, position: Int, id: Long
-            ) {
-                selectedCurrency = parent.getItemAtPosition(position).toString()
-                // If conversion is enabled, update the conversion
-                if (costConversionCheckBox.isChecked) {
-                    performCurrencyConversion(expenseAmountEditText, textConvertedCost)
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-
+        // When saving, perform conversion if needed and pass back the expense
         saveButton.setOnClickListener {
             val name = expenseNameEditText.text.toString()
             val amount = expenseAmountEditText.text.toString().toDoubleOrNull() ?: 0.0
             val date = expenseDateEditText.text.toString()
-            val id = expenseToEdit?.id ?: (System.currentTimeMillis() / 1000).toInt()
+            val selectedCurrency = spinnerCurrency.selectedItem.toString()
 
-            // Use CAD as currency if conversion was applied (and selected currency is not CAD)
-            val expenseCurrency = if (costConversionCheckBox.isChecked && !selectedCurrency.equals("CAD", ignoreCase = true)) "CAD" else selectedCurrency
-
-            val newExpense = Expense(id, name, amount, date, expenseCurrency, convertedAmount)
-
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                "newExpense", bundleOf(
-                    "expenseId" to newExpense.id,
-                    "expenseName" to newExpense.expenseName,
-                    "expenseAmount" to newExpense.expenseAmount,
-                    "expenseDate" to newExpense.expenseDate,
-                    "currency" to newExpense.currency,
-                    "convertedCost" to newExpense.convertedCost
-                )
-            )
-
-            findNavController().popBackStack()
+            if (costConversionCheckBox.isChecked && !selectedCurrency.equals("CAD", ignoreCase = true)) {
+                lifecycleScope.launch {
+                    convertedAmount = performCurrencyConversion(amount, selectedCurrency)
+                    textConvertedCost.text = formatAmount(convertedAmount, "CAD")
+                    createAndReturnExpense(name, amount, date, convertedAmount, selectedCurrency)
+                }
+            } else {
+                convertedAmount = amount
+                textConvertedCost.text = formatAmount(amount, selectedCurrency)
+                createAndReturnExpense(name, amount, date, convertedAmount, selectedCurrency)
+            }
         }
 
         return view
     }
 
-    private fun performCurrencyConversion(amountInput: EditText, output: TextView) {
-        val inputAmount = amountInput.text.toString().toDoubleOrNull()
-        if (inputAmount == null) {
-            Toast.makeText(requireContext(), "Enter a valid amount first", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val currentCurrency = selectedCurrency
-
-        lifecycleScope.launch {
-            try {
-                val conversionFactor = withContext(Dispatchers.IO) {
-                    Log.d("CurrencyConversion", "Selected currency: $currentCurrency")
-                    if (currentCurrency.equals("CAD", ignoreCase = true)) {
-                        1.0
-                    } else {
-
-                        val response = RetrofitClient.instance.getRates("cad")
-                        Log.d("Current currency", currentCurrency)
-                        val rateFromCadToSelected = response.cad[currentCurrency.lowercase()]
-                        if (rateFromCadToSelected != null && rateFromCadToSelected != 0.0) {
-                            1.0 / rateFromCadToSelected
-                        } else {
-                            1.0
-                        }
-                    }
+    private suspend fun performCurrencyConversion(amount: Double, selectedCurrency: String): Double {
+        return withContext(Dispatchers.IO) {
+            if (selectedCurrency.equals("CAD", ignoreCase = true)) {
+                amount
+            } else {
+                try {
+                    val response = RetrofitClient.instance.getRates("cad")
+                    val rate = response.cad[selectedCurrency.lowercase()]
+                    val conversionFactor = if (rate != null && rate != 0.0) 1.0 / rate else 1.0
+                    amount * conversionFactor
+                } catch (e: Exception) {
+                    amount
                 }
-
-                convertedAmount = inputAmount * conversionFactor
-
-                val formatted = NumberFormat.getCurrencyInstance().apply {
-                    currency = Currency.getInstance("CAD")
-                }.format(convertedAmount)
-
-                output.text = "Converted: $formatted"
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Conversion error: ${e.message}", Toast.LENGTH_SHORT)
-                    .show()
             }
         }
     }
+
+    private fun formatAmount(amount: Double, currencyCode: String): String {
+        val formatted = NumberFormat.getCurrencyInstance().apply {
+            currency = Currency.getInstance(currencyCode)
+        }.format(amount)
+        return "Amount: $formatted"
+    }
+
+    private fun createAndReturnExpense(name: String, amount: Double, date: String, converted: Double, selectedCurrency: String) {
+        // When conversion is applied, we assume the converted amount is in CAD.
+        val expenseCurrency = if (converted != amount) "CAD" else selectedCurrency
+        val newExpense = Expense(
+            id = (System.currentTimeMillis() / 1000).toInt(),
+            expenseName = name,
+            expenseAmount = amount,
+            expenseDate = date,
+            currency = expenseCurrency,
+            convertedCost = converted
+        )
+        findNavController().previousBackStackEntry?.savedStateHandle?.set(
+            "newExpense", bundleOf(
+                "expenseId" to newExpense.id,
+                "expenseName" to newExpense.expenseName,
+                "expenseAmount" to newExpense.expenseAmount,
+                "expenseDate" to newExpense.expenseDate,
+                "currency" to newExpense.currency,
+                "convertedCost" to newExpense.convertedCost
+            )
+        )
+        findNavController().popBackStack()
+    }
+
+
+
 }
