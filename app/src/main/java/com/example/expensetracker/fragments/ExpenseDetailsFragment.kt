@@ -1,4 +1,4 @@
-package com.example.expensetracker
+package com.example.expensetracker.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.expensetracker.R
 
 class ExpenseDetailsFragment : Fragment() {
 

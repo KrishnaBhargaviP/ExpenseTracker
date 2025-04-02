@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.expensetracker.ExpensesListFragment"
+        android:name="com.example.expensetracker.fragments.ExpensesListFragment"
         android:label="MainFragment" >
         <action
             android:id="@+id/action_mainFragment_to_addExpenseFragment"
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/addExpenseFragment"
-        android:name="com.example.expensetracker.AddExpenseFragment"
+        android:name="com.example.expensetracker.fragments.AddExpenseFragment"
         android:label="AddExpenseFragment">
         <argument
             android:name="expenseId"
@@ -37,7 +37,7 @@
 
     <fragment
         android:id="@+id/expenseDetailsFragment"
-        android:name="com.example.expensetracker.ExpenseDetailsFragment"
+        android:name="com.example.expensetracker.fragments.ExpenseDetailsFragment"
         android:label="ExpenseDetailsFragment">
         <argument
             android:name="expenseName"

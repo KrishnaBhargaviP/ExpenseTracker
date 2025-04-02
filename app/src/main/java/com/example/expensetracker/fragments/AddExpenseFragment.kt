@@ -1,4 +1,4 @@
-package com.example.expensetracker
+package com.example.expensetracker.fragments
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
@@ -12,6 +12,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.expensetracker.R
+import com.example.expensetracker.models.Expense
 import com.example.expensetracker.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

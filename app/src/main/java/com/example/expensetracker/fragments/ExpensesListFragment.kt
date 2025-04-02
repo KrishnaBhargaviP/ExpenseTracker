@@ -1,4 +1,4 @@
-package com.example.expensetracker
+package com.example.expensetracker.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.expensetracker.ExpenseAdapter
+import com.example.expensetracker.R
+import com.example.expensetracker.models.Expense
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -19,10 +22,8 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.Currency
 
-private const val FILE_NAME = "expenses.txt"
-
 class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
-
+    private val FILE_NAME = "expenses.txt"
     private lateinit var recyclerView: RecyclerView
     private lateinit var expenseAdapter: ExpenseAdapter
     private val expenseList = mutableListOf<Expense>()

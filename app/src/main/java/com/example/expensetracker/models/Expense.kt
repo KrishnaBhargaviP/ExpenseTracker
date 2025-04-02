@@ -1,4 +1,4 @@
-package com.example.expensetracker
+package com.example.expensetracker.models
 
 
 data class Expense(
