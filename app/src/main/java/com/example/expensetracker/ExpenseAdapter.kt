@@ -41,7 +41,7 @@ class ExpenseAdapter(
         fun bind(expense: Expense) {
             val sym = java.util.Currency.getInstance(expense.currency.uppercase()).symbol
             expenseNameTextView.text = expense.expenseName
-            expenseAmountTextView.text = "Amount: ${sym} ${"%.2f".format(expense.expenseAmount)} "
+            expenseAmountTextView.text = "Amount: ${sym} ${"%.2f".format(expense.convertedCost)} "
             expenseDateTextView.text = "Date: ${expense.expenseDate}"
 
             editButton.setOnClickListener {
