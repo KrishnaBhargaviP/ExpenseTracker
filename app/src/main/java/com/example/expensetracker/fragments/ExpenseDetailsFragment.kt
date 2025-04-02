@@ -15,21 +15,27 @@ class ExpenseDetailsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_expense_details, container, false)
 
-        val expenseName = arguments?.getString("expenseName") ?: "No Name"
-        val expenseAmount = arguments?.getDouble("expenseAmount") ?: 0.0
-        val expenseDate = arguments?.getString("expenseDate") ?: "No Date"
+        // Retrieve bundle from SavedStateHandle
+        val savedStateHandle = findNavController().previousBackStackEntry?.savedStateHandle
+        val bundle = savedStateHandle?.get<Bundle>("newExpense")
+
+        val expenseName = bundle?.getString("expenseName") ?: "No Name"
+        val expenseAmount = bundle?.getDouble("expenseAmount") ?: 0.0
+        val expenseDate = bundle?.getString("expenseDate") ?: "No Date"
 
         view.findViewById<TextView>(R.id.expenseNameTextView).text = expenseName
         view.findViewById<TextView>(R.id.expenseAmountTextView).text = "Amount: $${"%.2f".format(expenseAmount)}"
         view.findViewById<TextView>(R.id.expenseDateTextView).text = expenseDate
+        savedStateHandle?.remove<Bundle>("newExpense")
 
         val backButton = view.findViewById<Button>(R.id.backToHomeButton)
         backButton.setOnClickListener {
             findNavController().popBackStack()
         }
+
         return view
     }
 }
