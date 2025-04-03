@@ -100,7 +100,7 @@ class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
     override fun onViewClick(expense: Expense) {
         val bundle = Bundle().apply {
             putString("expenseName", expense.expenseName)
-            putDouble("expenseAmount", expense.expenseAmount)
+            putFloat("expenseAmount", expense.expenseAmount.toFloat())
             putString("expenseDate", expense.expenseDate)
             putString("currency", expense.currency)
             putDouble("convertedCost", expense.convertedCost)
