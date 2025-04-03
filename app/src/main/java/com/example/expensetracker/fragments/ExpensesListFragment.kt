@@ -20,7 +20,6 @@ import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.Currency
 
 class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
     private val FILE_NAME = "expenses.txt"
@@ -49,27 +48,23 @@ class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
         }
 
         updateExpenseTotalFromFile(view)
-
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // If using saved state handle to pass a new expense, observe and update the list.
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("newExpense")
             ?.observe(viewLifecycleOwner) { bundle ->
-                val currencyCodeStr = bundle.getString("currency") ?: "CAD"
-                val currency = Currency.getInstance(currencyCodeStr)
                 val updatedExpense = Expense(
                     id = bundle.getInt("expenseId"),
                     expenseName = bundle.getString("expenseName") ?: "",
                     expenseAmount = bundle.getDouble("expenseAmount", 0.0),
                     expenseDate = bundle.getString("expenseDate") ?: "",
-                    currency = currency.toString(),
+                    currency = bundle.getString("currency") ?: "CAD",
                     convertedCost = bundle.getDouble("convertedCost", 0.0)
                 )
-
-
                 val index = expenseList.indexOfFirst { it.id == updatedExpense.id }
                 if (index != -1) {
                     expenseList[index] = updatedExpense
@@ -89,6 +84,8 @@ class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
             putString("expenseName", expense.expenseName)
             putDouble("expenseAmount", expense.expenseAmount)
             putString("expenseDate", expense.expenseDate)
+            putString("currency", expense.currency)
+            putDouble("convertedCost", expense.convertedCost)
         }
         findNavController().navigate(R.id.action_mainFragment_to_addExpenseFragment, bundle)
     }
@@ -103,12 +100,13 @@ class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
     override fun onViewClick(expense: Expense) {
         val bundle = Bundle().apply {
             putString("expenseName", expense.expenseName)
-            putFloat("expenseAmount", expense.expenseAmount.toFloat())
+            putDouble("expenseAmount", expense.expenseAmount)
             putString("expenseDate", expense.expenseDate)
+            putString("currency", expense.currency)
+            putDouble("convertedCost", expense.convertedCost)
         }
         findNavController().navigate(R.id.expenseDetailsFragment, bundle)
     }
-
 
     private fun updateExpenseTotalFromFile(view: View?) {
         val fileExpenses = loadExpensesFromFile(requireContext())
@@ -130,8 +128,14 @@ class ExpensesListFragment : Fragment(), ExpenseAdapter.ExpenseItemListener {
 
     private fun loadExpensesFromFile(context: Context): MutableList<Expense> {
         val expenseList: MutableList<Expense> = mutableListOf()
+        val filesDirPath = context.filesDir.absolutePath
+        Log.d("FilePath", "Files directory: $filesDirPath")
+
+
         try {
-            val file = File(context.filesDir, FILE_NAME)
+            val file = File(filesDirPath, FILE_NAME)
+
+            Log.d("FilePath", "Expenses file path: ${file.absolutePath}")
             if (!file.exists()) return expenseList
 
             val json = file.readText()

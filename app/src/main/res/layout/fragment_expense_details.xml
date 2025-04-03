@@ -29,6 +29,14 @@
         android:text="Date: 31/03/2025"
         android:textSize="18sp" />
 
+    <TextView
+        android:id="@+id/expenseConvertedCostTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Converted Cost: $0.00"
+        android:textSize="18sp"
+        android:paddingBottom="8dp" />
+
     <Button
         android:id="@+id/backToHomeButton"
         android:layout_width="wrap_content"

@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -60,8 +59,7 @@ class AddExpenseFragment : Fragment() {
         val defaultIndex = currencies.indexOf("CAD")
         if (defaultIndex >= 0) spinnerCurrency.setSelection(defaultIndex)
 
-
-        // When saving, perform conversion if needed and pass back the expense
+        // When saving, perform conversion if needed and pass back the expense details
         saveButton.setOnClickListener {
             val name = expenseNameEditText.text.toString()
             val amount = expenseAmountEditText.text.toString().toDoubleOrNull() ?: 0.0
@@ -90,11 +88,17 @@ class AddExpenseFragment : Fragment() {
                 amount
             } else {
                 try {
+                    // Fetch exchange rates with CAD as the base currency
                     val response = RetrofitClient.instance.getRates("cad")
                     val rate = response.cad[selectedCurrency.lowercase()]
-                    val conversionFactor = if (rate != null && rate != 0.0) 1.0 / rate else 1.0
-                    amount * conversionFactor
+                    // Convert the amount from the selected currency to CAD: amount / rate
+                    if (rate != null && rate != 0.0) {
+                        amount / rate
+                    } else {
+                        amount
+                    }
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     amount
                 }
             }
@@ -109,7 +113,7 @@ class AddExpenseFragment : Fragment() {
     }
 
     private fun createAndReturnExpense(name: String, amount: Double, date: String, converted: Double, selectedCurrency: String) {
-        // When conversion is applied, we assume the converted amount is in CAD.
+
         val expenseCurrency = if (converted != amount) "CAD" else selectedCurrency
         val newExpense = Expense(
             id = (System.currentTimeMillis() / 1000).toInt(),
@@ -119,19 +123,17 @@ class AddExpenseFragment : Fragment() {
             currency = expenseCurrency,
             convertedCost = converted
         )
-        findNavController().previousBackStackEntry?.savedStateHandle?.set(
-            "newExpense", bundleOf(
-                "expenseId" to newExpense.id,
-                "expenseName" to newExpense.expenseName,
-                "expenseAmount" to newExpense.expenseAmount,
-                "expenseDate" to newExpense.expenseDate,
-                "currency" to newExpense.currency,
-                "convertedCost" to newExpense.convertedCost
-            )
-        )
+
+        val bundle = Bundle().apply {
+            putInt("expenseId", newExpense.id.toInt())
+            putString("expenseName", newExpense.expenseName)
+            putFloat("expenseAmount", newExpense.expenseAmount.toFloat())
+            putString("expenseDate", newExpense.expenseDate)
+            putString("currency", newExpense.currency)
+            putDouble("convertedCost", newExpense.convertedCost)
+        }
+        findNavController().previousBackStackEntry?.savedStateHandle?.set("newExpense", bundle)
         findNavController().popBackStack()
+
     }
-
-
-
 }
